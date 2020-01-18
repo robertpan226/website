@@ -42,36 +42,36 @@ const config = {
   ],
   stats: {
     colors: true
-  },
-  resolve: {
-    modules: [path.resolve('./node_modules'), path.resolve('./src')]
   }
 };
 
-if (process.env.NODE_ENV === 'production') {
-  config.mode = 'production';
-  // Basic options, except ignore console statements
-  config.optimization = {
-    minimizer: [
-      new TerserPlugin({
-        cache: true,
-        parallel: true,
-        terserOptions: {
-          compress: {
-            drop_console: true
+module.exports = async (env, argv) => {
+  if (argv.mode === 'production') {
+    config.mode = 'production';
+    // Basic options, except ignore console statements
+    config.optimization = {
+      minimizer: [
+        new TerserPlugin({
+          extractComments: false,
+          terserOptions: {
+            compress: {
+              drop_console: true
+            }
           }
-        }
-      })
-    ]
-  };
-} else {
-  config.mode = 'development';
-  config.devtool = '#cheap-module-source-map';
-  config.devServer = {
-    contentBase: path.resolve('./build'),
-    compress: true,
-    port: 8000
-  };
-}
+        })
+      ]
+    };
+  } else {
+    config.mode = 'development';
+    config.devtool = '#cheap-module-source-map';
+    config.devServer = {
+      contentBase: path.resolve('./build'),
+      host: 'localhost',
+      port: '8080',
+      hot: true,
+      overlay: true
+    };
+  }
 
-module.exports = config;
+  return config;
+};
